@@ -4,6 +4,11 @@ main = "src/index.js"
 compatibility_date = "2024-07-24"
 compatibility_flags = ["nodejs_compat"]
 
+# 添加自定义域路由
+routes = [
+  { pattern = "sublink.zengd.dpdns.org", custom_domain = true }
+]
+
 kv_namespaces = [
-  { binding = "SUBLINK_KV", id = "8943789ed0af49659f887fc740d11240" }
+  { binding = "SUBLINK_KV", id = "93aa40b2b3bc43e1b6615baa14b00a2b" }
 ]
