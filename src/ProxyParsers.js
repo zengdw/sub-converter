@@ -301,8 +301,8 @@ export class ProxyParser {
 				mainPart = basePart;
 				
 				// 解析插件参数
-				const pluginParams = pluginPart.split(';');
-				const pluginName = decodeURIComponent(pluginParams[0]);
+				const pluginParams = decodeURIComponent(pluginPart).split(';');
+				const pluginName = pluginParams[0];
 				
 				// 解析插件选项
 				for (let i = 1; i < pluginParams.length; i++) {
