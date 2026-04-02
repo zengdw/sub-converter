@@ -1099,4 +1099,11 @@ export const generateStyles = () => `
     visibility: visible;
     transform: translateY(0);
   }
+
+  .no-wrap-textarea {
+    white-space: pre;       /* 核心属性：保留空格和换行，但不自动折行 */
+    overflow-wrap: normal;  /* 确保单词不会被强行截断换行 */
+    overflow-x: auto;       /* 当内容超出宽度时，显示横向滚动条 */
+    min-height: 200px !important;
+  }
 `;

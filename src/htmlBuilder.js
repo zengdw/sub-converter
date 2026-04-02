@@ -82,7 +82,7 @@ const generateForm = () => `
 const generateShareUrlsSection = () => `
   <div class="form-section">
     <div class="form-section-title">${t('shareUrls')}</div>
-    <textarea class="form-control" id="inputTextarea" name="input" required placeholder="${t('urlPlaceholder')}" rows="3"></textarea>
+    <textarea class="form-control no-wrap-textarea" id="inputTextarea" name="input" required placeholder="${t('urlPlaceholder')}" rows="3"></textarea>
   </div>
 `;
 
