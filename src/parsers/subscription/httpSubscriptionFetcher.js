@@ -1,5 +1,6 @@
 import { decodeBase64 } from '../../utils.js';
 import { parseSubscriptionContent } from './subscriptionContentParser.js';
+import { isSafeFetchUrl } from '../../utils/urlValidator.js';
 
 const SUBSCRIPTION_URI_PATTERN = /^(ss|vmess|vless|hysteria|hysteria2|hy2|trojan|tuic|anytls|http|https):\/\//i;
 
@@ -123,6 +124,10 @@ function detectFormat(content) {
  * @returns {Promise<object|string[]|null>} - Parsed subscription content
  */
 export async function fetchSubscription(url, userAgent) {
+    if (!isSafeFetchUrl(url)) {
+        console.warn('Rejected unsafe subscription URL:', url);
+        return null;
+    }
     try {
         const headers = new Headers();
         if (userAgent) {
@@ -152,6 +157,10 @@ export async function fetchSubscription(url, userAgent) {
  * @returns {Promise<{content: string, format: 'clash'|'singbox'|'surge'|'unknown', url: string, subscriptionUserinfo?: string}|null>}
  */
 export async function fetchSubscriptionWithFormat(url, userAgent) {
+    if (!isSafeFetchUrl(url)) {
+        console.warn('Rejected unsafe subscription URL:', url);
+        return null;
+    }
     try {
         const headers = new Headers();
         if (userAgent) {

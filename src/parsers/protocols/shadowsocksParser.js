@@ -1,4 +1,4 @@
-import { base64ToBinary } from '../../utils.js';
+import { base64ToBinary, safeDecodeURIComponent } from '../../utils.js';
 
 function parseServer(serverPart) {
     const match = serverPart.match(/\[([^\]]+)\]:(\d+)/);
@@ -88,7 +88,7 @@ export function parseShadowsocks(url) {
     let mainPart = parts[0];
     let tag = parts[1];
     if (tag && tag.includes('%')) {
-        tag = decodeURIComponent(tag);
+        tag = safeDecodeURIComponent(tag);
     }
 
     // Extract query parameters (for plugin support)

@@ -17,6 +17,7 @@ import { ConfigStorageService } from '../services/configStorageService.js';
 import { ServiceError, MissingDependencyError } from '../services/errors.js';
 import { normalizeRuntime } from '../runtime/runtimeConfig.js';
 import { PREDEFINED_RULE_SETS, SING_BOX_CONFIG, SING_BOX_CONFIG_V1_11, generateSubconverterConfig } from '../config/index.js';
+import { isSafeFetchUrl } from '../utils/urlValidator.js';
 
 const DEFAULT_USER_AGENT = 'curl/7.74.0';
 
@@ -277,6 +278,10 @@ export function createApp(bindings = {}) {
             if (!trimmedProxy) continue;
 
             if (trimmedProxy.startsWith('http://') || trimmedProxy.startsWith('https://')) {
+                if (!isSafeFetchUrl(trimmedProxy)) {
+                    runtime.logger.warn('Rejected unsafe proxy URL in /xray:', trimmedProxy);
+                    continue;
+                }
                 try {
                     const response = await fetch(trimmedProxy, { method: 'GET', headers });
                     const fetchedUserinfo = response.headers.get('subscription-userinfo');

@@ -441,31 +441,36 @@ export class SurgeConfigBuilder extends BaseConfigBuilder {
 
         rules.filter(rule => !!rule.domain_suffix).map(rule => {
             rule.domain_suffix.forEach(suffix => {
-                finalConfig.push(`DOMAIN-SUFFIX,${suffix},${this.t('outboundNames.' + rule.outbound)}`);
+                const safeSuffix = typeof suffix === 'string' ? suffix.replace(/[\r\n]+/g, '').trim() : suffix;
+                if (safeSuffix) finalConfig.push(`DOMAIN-SUFFIX,${safeSuffix},${this.t('outboundNames.' + rule.outbound)}`);
             });
         });
 
         rules.filter(rule => !!rule.domain_keyword).map(rule => {
             rule.domain_keyword.forEach(keyword => {
-                finalConfig.push(`DOMAIN-KEYWORD,${keyword},${this.t('outboundNames.' + rule.outbound)}`);
+                const safeKeyword = typeof keyword === 'string' ? keyword.replace(/[\r\n]+/g, '').trim() : keyword;
+                if (safeKeyword) finalConfig.push(`DOMAIN-KEYWORD,${safeKeyword},${this.t('outboundNames.' + rule.outbound)}`);
             });
         });
 
         rules.filter(rule => rule.site_rules[0] !== '').map(rule => {
             rule.site_rules.forEach(site => {
-                finalConfig.push(`RULE-SET,${SURGE_SITE_RULE_SET_BASEURL}${site}.conf,${this.t('outboundNames.' + rule.outbound)}`);
+                const safeSite = typeof site === 'string' ? site.replace(/[\r\n]+/g, '').trim() : site;
+                if (safeSite) finalConfig.push(`RULE-SET,${SURGE_SITE_RULE_SET_BASEURL}${safeSite}.conf,${this.t('outboundNames.' + rule.outbound)}`);
             });
         });
 
         rules.filter(rule => rule.ip_rules[0] !== '').map(rule => {
             rule.ip_rules.forEach(ip => {
-                finalConfig.push(`RULE-SET,${SURGE_IP_RULE_SET_BASEURL}${ip}.txt,${this.t('outboundNames.' + rule.outbound)},no-resolve`);
+                const safeIp = typeof ip === 'string' ? ip.replace(/[\r\n]+/g, '').trim() : ip;
+                if (safeIp) finalConfig.push(`RULE-SET,${SURGE_IP_RULE_SET_BASEURL}${safeIp}.txt,${this.t('outboundNames.' + rule.outbound)},no-resolve`);
             });
         });
 
         rules.filter(rule => !!rule.ip_cidr).map(rule => {
             rule.ip_cidr.forEach(cidr => {
-                finalConfig.push(`IP-CIDR,${cidr},${this.t('outboundNames.' + rule.outbound)},no-resolve`);
+                const safeCidr = typeof cidr === 'string' ? cidr.replace(/[\r\n]+/g, '').trim() : cidr;
+                if (safeCidr) finalConfig.push(`IP-CIDR,${safeCidr},${this.t('outboundNames.' + rule.outbound)},no-resolve`);
             });
         });
 

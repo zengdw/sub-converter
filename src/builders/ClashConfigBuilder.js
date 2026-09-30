@@ -670,7 +670,7 @@ export class ClashConfigBuilder extends BaseConfigBuilder {
 
         // Enable Clash UI (external controller/dashboard) when requested or when custom UI params are provided
         if (this.enableClashUI || this.externalController || this.externalUiDownloadUrl) {
-            const defaultController = '0.0.0.0:9090';
+            const defaultController = '127.0.0.1:9090';
             const defaultUiPath = './ui';
             const defaultUiName = 'zashboard';
             const defaultUiUrl = 'https://gh-proxy.com/https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip';

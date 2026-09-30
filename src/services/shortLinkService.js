@@ -1,5 +1,8 @@
 import { generateWebPath } from '../utils.js';
-import { MissingDependencyError } from './errors.js';
+import { MissingDependencyError, InvalidPayloadError } from './errors.js';
+
+const SHORT_CODE_REGEX = /^[a-zA-Z0-9_-]{4,64}$/;
+const RESERVED_PREFIX_REGEX = /^(clash|singbox|surge|xray)_/i;
 
 export class ShortLinkService {
     constructor(kv, options = {}) {
@@ -16,7 +19,23 @@ export class ShortLinkService {
 
     async createShortLink(queryString, providedCode) {
         const kv = this.ensureKv();
-        const shortCode = providedCode || generateWebPath();
+        let shortCode = providedCode;
+
+        if (shortCode) {
+            if (!SHORT_CODE_REGEX.test(shortCode)) {
+                throw new InvalidPayloadError('Invalid custom short code format');
+            }
+            if (RESERVED_PREFIX_REGEX.test(shortCode)) {
+                throw new InvalidPayloadError('Short code uses a reserved prefix');
+            }
+            const existing = await kv.get(shortCode);
+            if (existing && existing !== queryString) {
+                throw new InvalidPayloadError('Short code already in use');
+            }
+        } else {
+            shortCode = generateWebPath();
+        }
+
         const ttl = this.options.shortLinkTtlSeconds;
         const putOptions = ttl ? { expirationTtl: ttl } : undefined;
         await kv.put(shortCode, queryString, putOptions);

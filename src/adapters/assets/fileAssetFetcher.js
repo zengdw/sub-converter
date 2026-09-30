@@ -21,7 +21,8 @@ export function createFileAssetFetcher(rootDirectory = 'public') {
         relativePath = relativePath.replace(/^\/+/, '');
         const targetPath = path.resolve(root, relativePath);
 
-        if (!targetPath.startsWith(root)) {
+        const rootWithSep = root.endsWith(path.sep) ? root : root + path.sep;
+        if (targetPath !== root && !targetPath.startsWith(rootWithSep)) {
             return new Response('Not found', { status: 404 });
         }
 

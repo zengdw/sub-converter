@@ -252,6 +252,15 @@ export function generateWebPath(length = PATH_LENGTH) {
 	return result
 }
 
+export function safeDecodeURIComponent(str) {
+	if (typeof str !== 'string') return str;
+	try {
+		return decodeURIComponent(str);
+	} catch (_) {
+		return str;
+	}
+}
+
 export function parseServerInfo(serverInfo) {
 	if (!serverInfo || typeof serverInfo !== 'string') {
 		return { host: null, port: null };
@@ -260,28 +269,50 @@ export function parseServerInfo(serverInfo) {
 	if (serverInfo.startsWith('[')) {
 		const closeBracketIndex = serverInfo.indexOf(']');
 		host = serverInfo.slice(1, closeBracketIndex);
-		port = serverInfo.slice(closeBracketIndex + 2); // +2 to skip ']:'
+		const rest = serverInfo.slice(closeBracketIndex + 1);
+		port = rest.startsWith(':') ? rest.slice(1) : null;
 	} else {
 		const lastColonIndex = serverInfo.lastIndexOf(':');
-		host = serverInfo.slice(0, lastColonIndex);
-		port = serverInfo.slice(lastColonIndex + 1);
+		if (lastColonIndex === -1) {
+			host = serverInfo;
+			port = null;
+		} else {
+			host = serverInfo.slice(0, lastColonIndex);
+			port = serverInfo.slice(lastColonIndex + 1);
+		}
 	}
-	return { host, port: parseInt(port) };
+	const parsedPort = port !== null && port !== '' ? parseInt(port, 10) : null;
+	return { host, port: Number.isNaN(parsedPort) ? null : parsedPort };
 }
 
 export function parseUrlParams(url) {
-	const [, rest] = url.split('://');
-	const [addressPart, ...remainingParts] = rest.split('?');
-	const paramsPart = remainingParts.join('?');
+	if (!url || typeof url !== 'string') {
+		return { addressPart: '', params: {}, name: '' };
+	}
 
-	const [paramsOnly, ...fragmentParts] = paramsPart.split('#');
+	const protocolIndex = url.indexOf('://');
+	const rest = protocolIndex !== -1 ? url.slice(protocolIndex + 3) : url;
+
+	let beforeHash = rest;
+	let namePart = '';
+	const hashIndex = rest.indexOf('#');
+	if (hashIndex !== -1) {
+		namePart = rest.slice(hashIndex + 1);
+		beforeHash = rest.slice(0, hashIndex);
+	}
+
+	let addressPart = beforeHash;
+	let paramsOnly = '';
+	const queryIndex = beforeHash.indexOf('?');
+	if (queryIndex !== -1) {
+		addressPart = beforeHash.slice(0, queryIndex);
+		paramsOnly = beforeHash.slice(queryIndex + 1);
+	}
+
 	const searchParams = new URLSearchParams(paramsOnly);
 	const params = Object.fromEntries(searchParams.entries());
 
-	let name = fragmentParts.length > 0 ? fragmentParts.join('#') : '';
-	try {
-		name = decodeURIComponent(name);
-	} catch (error) { };
+	const name = safeDecodeURIComponent(namePart);
 
 	return { addressPart, params, name };
 }
