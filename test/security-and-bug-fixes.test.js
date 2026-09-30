@@ -142,4 +142,20 @@ describe('Security & Bug Fixes', () => {
             expect(originalCustomRules[1].name).toBe(rulesCopy[1].name);
         });
     });
+
+    describe('TextareaWithActions wrap="off"', () => {
+        it('renders wrap="off" and whitespace-pre overflow-x-auto classes', async () => {
+            const { TextareaWithActions } = await import('../src/components/TextareaWithActions.jsx');
+            const element = TextareaWithActions({
+                id: 'input',
+                name: 'input',
+                wrap: 'off'
+            });
+            // Convert JSX element to string
+            const rendered = String(await element);
+            expect(rendered).toContain('wrap="off"');
+            expect(rendered).toContain('whitespace-pre');
+            expect(rendered).toContain('overflow-x-auto');
+        });
+    });
 });
